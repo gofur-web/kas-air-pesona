@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kas AIR Pesona - Perumahan Pesona Rajeg Mulya</title>
+
+<!-- Konfigurasi Khusus PWA & iOS untuk Install di HP -->
+<link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Kas AIR Pesona">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#104681">
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f2f7fd;color:#143762;font:14px Arial}
+header{background:linear-gradient(110deg,#104681,#287bd0);color:white;padding:20px;display:flex;justify-content:space-between;align-items:center;gap:15px}
+.brand{font-size:22px;font-weight:bold}
+.sub{font-size:12px;line-height:1.6;margin-top:6px;color:#e1edff}
+.tag{border:1px solid #ffffff80;border-radius:24px;padding:8px 12px;font-size:11px;white-space:nowrap}
+.layout{display:grid;grid-template-columns:190px 1fr;min-height:80vh}
+aside{background:#fff;padding:16px;border-right:1px solid #d8e5f5}
+.nav{padding:14px;border-radius:9px;margin-bottom:8px;font-weight:bold;cursor:pointer;transition:all 0.2s ease}
+.nav:hover{background:#eaf3ff;color:#104681}
+.nav.active{background:#2879e8;color:#fff}
+main{padding:16px;min-width:0}
+.heading{display:flex;justify-content:space-between;gap:10px;margin-bottom:16px;align-items:center}
+.heading h2{margin:0;font-size:18px}
+.muted{color:#6d8099;font-size:12px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.card,.panel{background:#fff;border:1px solid #d8e5f5;border-radius:12px;padding:16px;box-shadow:0 2px 8px #173c6510}
+.card{min-height:120px}
+.label{font-weight:bold;font-size:13px}
+.value{font-size:clamp(18px,2vw,24px);font-weight:bold;margin:12px 0}
+.blue{background:#f0f8ff;border-color:#a9d3ff}
+.green{background:#f0fff5;border-color:#a8e7c4}
+.red{background:#fff6f1;border-color:#ffc7b0}
+.purple{background:#f7f3ff;border-color:#d7c8ff}
+.two{display:grid;grid-template-columns:1.4fr 1fr;gap:12px;margin-top:12px}
+.panel h3{margin:0 0 15px;font-size:15px}
+.bars{height:180px;display:flex;align-items:end;gap:8px;border-bottom:1px solid #d8e5f5;padding:10px 5px 0}
+.group{height:100%;display:flex;align-items:end;gap:3px;flex:1;min-width:0}
+.bar{width:45%;background:#2879e8;border-radius:4px 4px 0 0}
+.bar.exp{background:#ff8b3d}
+.months{display:flex;justify-content:space-around;margin-top:8px;font-size:11px;color:#6d8099}
+.legend{margin-top:12px;font-size:12px;color:#6d8099}
+.dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin:0 5px 0 12px}
+.cat{margin:12px 0}
+.track{height:7px;background:#edf2f9;border-radius:10px;margin-top:6px;overflow:hidden}
+.fill{height:100%;background:#2879e8}
+.bottom{display:grid;grid-template-columns:1.7fr 1fr;gap:12px;margin-top:12px}
+
+/* Tabel Responsif */
+.tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid #d8e5f5;border-radius:8px;background:#fff}
+table{border-collapse:collapse;width:100%;min-width:700px;font-size:13px}
+th,td{text-align:left;padding:12px 10px;border-bottom:1px solid #e1eaf6}
+th{background:#eaf3ff;font-weight:bold;color:#104681}
+.pill{border-radius:18px;padding:5px 10px;font-size:11px;font-weight:bold;display:inline-block}
+.in{background:#dcf8e8;color:#147344}
+.out{background:#ffe4e0;color:#b42318}
+.info{padding:13px;background:#edf7ff;border-radius:9px;line-height:1.6;font-size:13px}
+footer{background:#104b8c;color:#fff;padding:14px 20px;font-size:12px;text-align:center}
+.error{background:#fff1f0;color:#a8071a;padding:18px;border-radius:9px}
+
+/* Tampilan Kartu Khusus Mobile */
+.mobile-card-list{display:none}
+
+@media(max-width:900px){
+  .cards{grid-template-columns:repeat(2,1fr)}
+  .two,.bottom{grid-template-columns:1fr}
+}
+
+@media(max-width:650px){
+  header{padding:15px;flex-direction:column;align-items:flex-start}
+  .tag{display:none}
+  .layout{display:block}
+  aside{display:flex;overflow-x:auto;padding:8px;gap:6px;border-right:none;border-bottom:1px solid #d8e5f5}
+  .nav{white-space:nowrap;padding:10px 14px;margin:0;font-size:13px}
+  main{padding:12px}
+  .cards{grid-template-columns:1fr;gap:8px}
+  .card{min-height:auto}
+  
+  .desktop-table { display: none; }
+  .mobile-card-list { display: flex; flex-direction: column; gap: 10px; }
+  .iuran-card { background: #fff; border: 1px solid #d8e5f5; border-radius: 10px; padding: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+  .iuran-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-weight: bold; font-size: 15px; color: #104681; }
+  .iuran-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; margin-top: 8px; font-size: 11px; text-align: center; }
+  .iuran-month-box { background: #f8fafc; border: 1px solid #e1eaf6; border-radius: 6px; padding: 6px 1px; }
+  .iuran-month-box.lunas { background: #dcf8e8; color: #147344; font-weight: bold; }
+  .iuran-month-box.belum { background: #ffe4e0; color: #b42318; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="brand">🏡 KAS AIR PESONA</div>
+    <div class="sub">Perumahan Pesona Rajeg Mulya<br>Desa Rajeg Mulya · Kecamatan Rajeg · Kabupaten Tangerang</div>
+  </div>
+  <div class="tag">TRANSPARAN · AKUNTABEL · BERSAMA WARGA</div>
+</header>
+
+<div class="layout">
+  <aside>
+    <div class="nav active" onclick="switchPage('beranda', this)">⌂ &nbsp; Beranda</div>
+    <div class="nav" onclick="switchPage('kas', this)">▤ &nbsp; Kas AIR</div>
+    <div class="nav" onclick="switchPage('iuran', this)">♧ &nbsp; Iuran Warga</div>
+    <div class="nav" onclick="switchPage('laporan', this)">▥ &nbsp; Laporan</div>
+    <div class="nav" onclick="switchPage('warga', this)">♙ &nbsp; Data Warga</div>
+    <div class="nav" onclick="switchPage('informasi', this)">📢 &nbsp; Informasi / Catatan</div>
+  </aside>
+  <main id="app">
+    <div class="muted">Memuat data dari Google Sheets KAS AIR...</div>
+  </main>
+</div>
+
+<footer>📍 KAS AIR PESONA | Perum Pesona Rajeg Mulya · Kabupaten Tangerang</footer>
+
+<script>
+const rp = n => 'Rp ' + Number(n||0).toLocaleString('id-ID');
+const esc = s => String(s??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+let storeData = null;
+
+function switchPage(page, el) {
+  document.querySelectorAll('.nav').forEach(n => n.classList.remove('active'));
+  if (el) el.classList.add('active');
+  if (!storeData) return;
+  renderView(page, storeData);
+}
+
+function renderView(page, d) {
+  if (page === 'beranda') drawDashboard(d);
+  else if (page === 'kas') drawKas(d);
+  else if (page === 'iuran') drawIuran(d);
+  else if (page === 'laporan') drawLaporan(d);
+  else if (page === 'warga') drawWarga(d);
+  else if (page === 'informasi') muatInformasi();
+}
+
+function drawDashboard(d) {
+  let ms = (d.monthly || []).slice(-10), mx = Math.max(1, ...ms.flatMap(x => [x.income, x.expense]));
+  let bars = ms.map(x => `<div class="group" title="${x.month}"><div class="bar" style="height:${Math.max(2,x.income/mx*100)}%"></div><div class="bar exp" style="height:${Math.max(2,x.expense/mx*100)}%"></div></div>`).join('');
+  let cats = (d.categories || []).length ? d.categories.map(x => `<div class="cat"><div>${esc(x.name)} <b style="float:right">${rp(x.amount)}</b></div><div class="track"><div class="fill" style="width:${Math.max(2,x.amount/Math.max(1,...d.categories.map(y=>y.amount))*100)}%"></div></div></div>`).join('') : '<p class="muted">Belum ada data pengeluaran.</p>';
+  let rows = (d.transactions || []).slice(0,8).map(x => `<tr><td>${esc(x.date.split('-').reverse().join('/'))}</td><td><span class="pill ${x.type.toLowerCase()==='pemasukan'?'in':'out'}">${esc(x.type)}</span></td><td>${esc(x.category)}</td><td>${esc(x.description)}</td><td><b>${rp(x.amount)}</b></td><td>${esc(x.method)}</td></tr>`).join('');
+
+  app.innerHTML = `
+    <div class="heading"><h2>⌂ Ringkasan Keuangan</h2><span class="muted">Diperbarui ${esc(d.updated || '-')}</span></div>
+    <div class="cards">
+      <div class="card blue"><div class="label">▣ Saldo Kas</div><div class="value">${rp(d.balance)}</div><small>Saldo bersih saat ini</small></div>
+      <div class="card green"><div class="label">⬆ Total Pemasukan</div><div class="value">${rp(d.income)}</div><small>Seluruh transaksi masuk</small></div>
+      <div class="card red"><div class="label">⬇ Total Pengeluaran</div><div class="value">${rp(d.expense)}</div><small>Seluruh transaksi keluar</small></div>
+      <div class="card purple"><div class="label">▤ Jumlah Transaksi</div><div class="value">${d.count || 0}</div><small>Transaksi tercatat</small></div>
+    </div>
+    <div class="two">
+      <section class="panel">
+        <h3>▥ Grafik Pemasukan & Pengeluaran Bulanan</h3>
+        <div class="bars">${bars || '<span class="muted">Grafik tampil setelah transaksi dimasukkan.</span>'}</div>
+        <div class="months">${ms.map(x => '<span>' + esc(x.month.slice(5)) + '</span>').join('')}</div>
+        <div class="legend"><span class="dot" style="background:#2879e8"></span>Pemasukan <span class="dot" style="background:#ff8b3d"></span>Pengeluaran</div>
+      </section>
+      <section class="panel">
+        <h3>◉ Rekap Kategori Pengeluaran</h3>${cats}
+      </section>
+    </div>
+    <div class="bottom">
+      <section class="panel">
+        <h3>▤ Riwayat Transaksi Terbaru</h3>
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Tanggal</th><th>Jenis</th><th>Kategori</th><th>Keterangan</th><th>Nominal</th><th>Metode</th></tr></thead>
+            <tbody>${rows || '<tr><td colspan="6">Belum ada transaksi.</td></tr>'}</tbody>
+          </table>
+        </div>
+      </section>
+      <section class="panel">
+        <h3>♧ Informasi untuk Warga</h3>
+        <div class="info"><b>Transparansi Kas Air Satelite</b><br>Laporan diperbarui otomatis dari Google Sheets pengurus.</div>
+        <div class="info" style="margin-top:10px;background:#f0fff5"><b>Total Iuran Warga Terkumpul</b><br><b>${rp(d.totalIuranWarga)}</b></div>
+      </section>
+    </div>`;
+}
+
+function drawKas(d) {
+  let rows = (d.transactions || []).map(x => `<tr><td>${esc(x.date.split('-').reverse().join('/'))}</td><td><span class="pill ${x.type.toLowerCase()==='pemasukan'?'in':'out'}">${esc(x.type)}</span></td><td>${esc(x.category)}</td><td>${esc(x.description)}</td><td><b>${rp(x.amount)}</b></td><td>${esc(x.method)}</td></tr>`).join('');
+  app.innerHTML = `
+    <div class="heading"><h2>▤ Jurnal Kas AIR Pesona</h2></div>
+    <section class="panel">
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Tanggal</th><th>Jenis</th><th>Kategori</th><th>Keterangan</th><th>Nominal</th><th>Status</th></tr></thead>
+          <tbody>${rows || '<tr><td colspan="6">Belum ada data kas.</td></tr>'}</tbody>
+        </table>
+      </div>
+    </section>`;
+}
+
+function drawIuran(d) {
+  let validIuran = (d.iuranWarga || []).filter(x => x.blok && x.blok !== 'Blok' && x.nama && x.nama !== 'Nama_Warga');
+
+  let desktopRows = validIuran.map(x => `
+    <tr>
+      <td><b>${esc(x.blok)}</b></td>
+      <td>${esc(x.nama)}</td>
+      <td><span class="pill" style="background:#eaf3ff;color:#104681">${esc(x.status)}</span></td>
+      <td><span class="pill ${x.jan > 0 ? 'in' : 'out'}">${x.jan > 0 ? 'Lunas' : '-'}</span></td>
+      <td><span class="pill ${x.feb > 0 ? 'in' : 'out'}">${x.feb > 0 ? 'Lunas' : '-'}</span></td>
+      <td><span class="pill ${x.mar > 0 ? 'in' : 'out'}">${x.mar > 0 ? 'Lunas' : '-'}</span></td>
+      <td><span class="pill ${x.apr > 0 ? 'in' : 'out'}">${x.apr > 0 ? 'Lunas' : '-'}</span></td>
+      <td><span class="pill ${x.mei > 0 ? 'in' : 'out'}">${x.mei > 0 ? 'Lunas' : '-'}</span></td>
+      <td><span class="pill ${x.jun > 0 ? 'in' : 'out'}">${x.jun > 0 ? 'Lunas' : '-'}</span></td>
+      <td><span class="pill ${x.jul > 0 ? 'in' : 'out'}">${x.jul > 0 ? 'Lunas' : '-'}</span></td>
+      <td><span class="pill ${x.ags > 0 ? 'in' : 'out'}">${x.ags > 0 ? 'Lunas' : '-'}</span></td>
+      <td><span class="pill ${x.sep > 0 ? 'in' : 'out'}">${x.sep > 0 ? 'Lunas' : '-'}</span></td>
+      <td><span class="pill ${x.okt > 0 ? 'in' : 'out'}">${x.okt > 0 ? 'Lunas' : '-'}</span></td>
+      <td><span class="pill ${x.nov > 0 ? 'in' : 'out'}">${x.nov > 0 ? 'Lunas' : '-'}</span></td>
+      <td><span class="pill ${x.des > 0 ? 'in' : 'out'}">${x.des > 0 ? 'Lunas' : '-'}</span></td>
+      <td><b>${rp(x.total)}</b></td>
+    </tr>`).join('');
+
+  let mobileCards = validIuran.map(x => `
+    <div class="iuran-card">
+      <div class="iuran-card-header">
+        <span>🏠 Blok ${esc(x.blok)} - ${esc(x.nama)}</span>
+        <span style="font-size:12px;color:#104681;font-weight:normal">${esc(x.status)}</span>
+      </div>
+      <div style="font-size:12px;color:#6d8099;margin-bottom:6px">Status Iuran Bulanan 2026:</div>
+      <div class="iuran-grid">
+        <div class="iuran-month-box ${x.jan > 0 ? 'lunas':'belum'}">Jan<br><b>${x.jan > 0 ? '✓' : '×'}</b></div>
+        <div class="iuran-month-box ${x.feb > 0 ? 'lunas':'belum'}">Feb<br><b>${x.feb > 0 ? '✓' : '×'}</b></div>
+        <div class="iuran-month-box ${x.mar > 0 ? 'lunas':'belum'}">Mar<br><b>${x.mar > 0 ? '✓' : '×'}</b></div>
+        <div class="iuran-month-box ${x.apr > 0 ? 'lunas':'belum'}">Apr<br><b>${x.apr > 0 ? '✓' : '×'}</b></div>
+        <div class="iuran-month-box ${x.mei > 0 ? 'lunas':'belum'}">Mei<br><b>${x.mei > 0 ? '✓' : '×'}</b></div>
+        <div class="iuran-month-box ${x.jun > 0 ? 'lunas':'belum'}">Jun<br><b>${x.jun > 0 ? '✓' : '×'}</b></div>
+        <div class="iuran-month-box ${x.jul > 0 ? 'lunas':'belum'}">Jul<br><b>${x.jul > 0 ? '✓' : '×'}</b></div>
+        <div class="iuran-month-box ${x.ags > 0 ? 'lunas':'belum'}">Ags<br><b>${x.ags > 0 ? '✓' : '×'}</b></div>
+        <div class="iuran-month-box ${x.sep > 0 ? 'lunas':'belum'}">Sep<br><b>${x.sep > 0 ? '✓' : '×'}</b></div>
+        <div class="iuran-month-box ${x.okt > 0 ? 'lunas':'belum'}">Okt<br><b>${x.okt > 0 ? '✓' : '×'}</b></div>
+        <div class="iuran-month-box ${x.nov > 0 ? 'lunas':'belum'}">Nov<br><b>${x.nov > 0 ? '✓' : '×'}</b></div>
+        <div class="iuran-month-box ${x.des > 0 ? 'lunas':'belum'}">Des<br><b>${x.des > 0 ? '✓' : '×'}</b></div>
+      </div>
+      <div style="margin-top:10px;text-align:right;font-size:13px;border-top:1px solid #f0f4f8;padding-top:6px">
+        Total Disetor: <b style="color:#147344">${rp(x.total)}</b>
+      </div>
+    </div>`).join('');
+
+  app.innerHTML = `
+    <div class="heading"><h2>♧ Rekapitulasi Iuran Air Warga (2026)</h2></div>
+    <section class="panel">
+      <div class="info" style="margin-bottom:15px;background:#f0fff5">
+        💡 <b>Transparansi Warga:</b> Warga dapat memeriksa status iuran air bulanan masing-masing rumah secara transparan. Total akumulasi iuran terkumpul: <b>${rp(d.totalIuranWarga)}</b>.
+      </div>
+      
+      <div class="tablewrap desktop-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Blok</th><th>Nama Warga</th><th>Status</th>
+              <th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>Mei</th><th>Jun</th><th>Jul</th><th>Ags</th><th>Sep</th><th>Okt</th><th>Nov</th><th>Des</th><th>Total Lunas</th>
+            </tr>
+          </thead>
+          <tbody>${desktopRows || '<tr><td colspan="16">Belum ada data iuran warga.</td></tr>'}</tbody>
+        </table>
+      </div>
+
+      <div class="mobile-card-list">
+        ${mobileCards || '<p class="muted">Belum ada data iuran warga.</p>'}
+      </div>
+    </section>`;
+}
+
+function drawLaporan(d) {
+  app.innerHTML = `
+    <div class="heading"><h2>▥ Laporan Pertanggungjawaban Kas</h2></div>
+    <div class="cards" style="margin-bottom:15px">
+      <div class="card green"><div class="label">Total Pemasukan</div><div class="value">${rp(d.income)}</div></div>
+      <div class="card red"><div class="label">Total Pengeluaran</div><div class="value">${rp(d.expense)}</div></div>
+      <div class="card blue"><div class="label">Saldo Akhir Kas</div><div class="value">${rp(d.balance)}</div></div>
+    </div>
+    <section class="panel">
+      <h3>Transparansi Keuangan Air Satelite</h3>
+      <p class="muted">Laporan bersumber langsung dari Google Sheets pengurus.</p>
+    </section>`;
+}
+
+function drawWarga(d) {
+  let uniqueWarga = (d.iuranWarga || []).filter(x => x.blok && x.blok !== 'Blok' && x.nama && x.nama !== 'Nama_Warga');
+
+  let wargaRows = uniqueWarga.map(x => `
+    <tr>
+      <td><b>Blok ${esc(x.blok)}</b></td>
+      <td>${esc(x.nama)}</td>
+      <td><span class="pill" style="background:#f7f3ff;color:#6b21a8">${esc(x.status)}</span></td>
+    </tr>`).join('');
+
+  app.innerHTML = `
+    <div class="heading"><h2>♙ Data Warga & Hunian </h2></div>
+    <section class="panel">
+      <div class="info" style="margin-bottom:15px;background:#f0fff5">
+        💡 <b>Informasi Warga:</b> Daftar kepala keluarga dan status hunian warga Perumahan Pesona Rajeg Mulya.
+      </div>
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Blok / Rumah</th>
+              <th>Nama Warga</th>
+              <th>Status Hunian</th>
+            </tr>
+          </thead>
+          <tbody>${wargaRows || '<tr><td colspan="3">Belum ada data warga.</td></tr>'}</tbody>
+        </table>
+      </div>
+    </section>`;
+}
+
+let infoItems = [];
+let infoLoading = false;
+
+function formatTanggalInfo(value) {
+  if (!value) return '-';
+  const d = new Date(value + 'T00:00:00');
+  return Number.isNaN(d.getTime()) ? esc(value) : d.toLocaleDateString('id-ID', {day:'2-digit', month:'long', year:'numeric'});
+}
+
+function muatInformasi(callback) {
+  infoLoading = true;
+  fetch('/api/proxy?action=informasi')
+    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(items => {
+      infoItems = Array.isArray(items) ? items : [];
+      infoLoading = false;
+      drawInformasi();
+      if (typeof callback === 'function') callback();
+    })
+    .catch(err => {
+      infoLoading = false;
+      app.innerHTML = '<section class="panel"><h3>Informasi warga</h3><p class="error">Gagal memuat informasi bersama: ' + esc(err?.message || err) + '</p><button onclick="muatInformasi()">Coba lagi</button></section>';
+    });
+}
+
+function drawInformasi() {
+  const items = [...infoItems].sort((a,b) => (Number(b.createdAt) || 0) - (Number(a.createdAt) || 0));
+  const cards = items.map(x => `
+    <article class="panel" style="margin-top:12px">
+      <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">
+        <h3 style="margin-bottom:8px">${esc(x.judul)}</h3>
+        <span class="pill ${x.jenis === 'Penting' ? 'out' : 'in'}">${esc(x.jenis || 'Informasi')}</span>
+      </div>
+      <div class="muted">${formatTanggalInfo(x.tanggal)}${x.pembuat ? ' · '+esc(x.pembuat) : ''}</div>
+      <p style="white-space:pre-wrap;line-height:1.7">${esc(x.isi)}</p>
+      <button type="button" onclick="hapusInformasi('${esc(String(x.id))}')" style="border:0;border-radius:7px;background:#fff1f0;color:#b42318;padding:9px 12px;cursor:pointer">Hapus catatan (pengurus)</button>
+    </article>`).join('');
+
+  app.innerHTML = `
+    <div class="heading"><h2>📢 Informasi untuk Warga / Catatan</h2><button type="button" onclick="muatInformasi()">↻ Perbarui</button></div>
+    <section class="panel">
+      <h3>Tambah Informasi atau Catatan</h3>
+      <div class="info" style="margin-bottom:14px">Pengumuman yang disimpan akan masuk ke database bersama dan dapat dibaca dari HP warga lainnya. Hanya pengurus yang mengetahui PIN admin yang dapat menyimpan atau menghapus informasi.</div>
+      <form id="formInformasi">
+        <label for="infoJudul" style="display:block;font-weight:bold;margin:10px 0 6px">Judul informasi</label>
+        <input id="infoJudul" name="judul" required maxlength="120" placeholder="Contoh: Jadwal perbaikan saluran air" style="width:100%;padding:11px;border:1px solid #cbd8e8;border-radius:8px">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
+          <div>
+            <label for="infoJenis" style="display:block;font-weight:bold;margin:10px 0 6px">Jenis</label>
+            <select id="infoJenis" name="jenis" style="width:100%;padding:11px;border:1px solid #cbd8e8;border-radius:8px">
+              <option>Informasi</option><option>Penting</option><option>Catatan Pengurus</option>
+            </select>
+          </div>
+          <div>
+            <label for="infoTanggal" style="display:block;font-weight:bold;margin:10px 0 6px">Tanggal</label>
+            <input id="infoTanggal" name="tanggal" type="date" required value="${new Date().toLocaleDateString('en-CA')}" style="width:100%;padding:10px;border:1px solid #cbd8e5;border-radius:8px">
+          </div>
+        </div>
+        <label for="infoPembuat" style="display:block;font-weight:bold;margin:10px 0 6px">Nama pengurus (opsional)</label>
+        <input id="infoPembuat" name="pembuat" maxlength="80" placeholder="Contoh: Pengurus Kas Air" style="width:100%;padding:11px;border:1px solid #cbd8e8;border-radius:8px">
+        <label for="infoIsi" style="display:block;font-weight:bold;margin:10px 0 6px">Isi informasi / catatan</label>
+        <textarea id="infoIsi" name="isi" required maxlength="5000" rows="5" placeholder="Tuliskan informasi untuk warga..." style="width:100%;padding:11px;border:1px solid #cbd8e8;border-radius:8px;resize:vertical"></textarea>
+        <button id="btnSimpanInfo" type="submit" style="margin-top:12px;border:0;border-radius:8px;background:#2879e8;color:#fff;padding:11px 16px;font-weight:bold;cursor:pointer">Simpan ke Database Bersama</button>
+      </form>
+    </section>
+    <div class="heading" style="margin-top:22px"><h2>Daftar Informasi & Catatan</h2><span class="muted">${items.length} catatan${infoLoading ? ' · memuat...' : ''}</span></div>
+    <div id="daftarInformasi">${cards || '<section class="panel"><p class="muted">Belum ada informasi atau catatan.</p></section>'}</div>
+    <p class="muted" style="margin-top:12px">Data tersimpan di Google Sheets bersama, bukan hanya di browser/perangkat ini.</p>
+  `;
+
+  document.getElementById('formInformasi').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const f = new FormData(e.currentTarget);
+    const payload = {
+      judul: String(f.get('judul') || '').trim(),
+      isi: String(f.get('isi') || '').trim(),
+      jenis: String(f.get('jenis') || 'Informasi'),
+      tanggal: String(f.get('tanggal') || ''),
+      pembuat: String(f.get('pembuat') || '').trim()
+    };
+    if (!payload.judul || !payload.isi) return;
+    const pin = prompt('Masukkan PIN admin pengurus untuk menyimpan informasi:');
+    if (!pin) return;
+    const btn = document.getElementById('btnSimpanInfo');
+    btn.disabled = true; btn.textContent = 'Menyimpan...';
+    fetch('/api/proxy?action=tambahInformasi', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ data: payload, pin })
+    })
+      .then(async r => {
+        const result = await r.json();
+        if (!r.ok || !result.success) throw new Error(result.error || 'Gagal menyimpan informasi.');
+        alert('Informasi berhasil disimpan dan dapat dilihat oleh warga lain.');
+        muatInformasi();
+      })
+      .catch(err => {
+        alert('Gagal menyimpan informasi: ' + (err?.message || err));
+        btn.disabled = false; btn.textContent = 'Simpan ke Database Bersama';
+      });
+  });
+}
+
+function hapusInformasi(id) {
+  if (!confirm('Yakin ingin menghapus informasi/catatan ini?')) return;
+  const pin = prompt('Masukkan PIN admin pengurus untuk menghapus informasi:');
+  if (!pin) return;
+  fetch('/api/proxy?action=hapusInformasi', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id: String(id), pin })
+  })
+    .then(async r => {
+      const result = await r.json();
+      if (!r.ok || !result.success) throw new Error(result.error || 'Gagal menghapus informasi.');
+      alert('Informasi berhasil dihapus.');
+      muatInformasi();
+    })
+    .catch(err => alert('Gagal menghapus informasi: ' + (err?.message || err)));
+}
+
+function initData(d) {
+  if (d.error) {
+    app.innerHTML = '<div class="error">' + esc(d.error) + '</div>';
+    return;
+  }
+  storeData = d;
+  switchPage('beranda', document.querySelector('.nav.active'));
+}
+
+fetch('/api/proxy?action=dashboard')
+  .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+  .then(initData)
+  .catch(e => {
+    app.innerHTML = '<div class="error">Gagal memuat data: ' + esc(e.message || e) + '. Periksa konfigurasi API dan URL Apps Script.</div>';
+  });
+</script>
+</body>
+</html>
