@@ -461,5 +461,20 @@ fetch('/api/proxy?action=dashboard')
     app.innerHTML = '<div class="error">Gagal memuat data: ' + esc(e.message || e) + '. Periksa konfigurasi API dan URL Apps Script.</div>';
   });
 </script>
+  
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("/sw.js")
+      .then(function (registration) {
+        console.log("Kas AIR Pesona PWA aktif:", registration.scope);
+      })
+      .catch(function (error) {
+        console.error("PWA gagal diaktifkan:", error);
+      });
+  });
+}
+</script>
+
 </body>
 </html>
