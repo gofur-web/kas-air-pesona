@@ -1,4 +1,3 @@
-
 export default async function handler(req, res) {
   const gasUrl = process.env.GAS_WEB_APP_URL;
 
@@ -13,7 +12,12 @@ export default async function handler(req, res) {
     'dashboard',
     'informasi',
     'tambahInformasi',
-    'hapusInformasi'
+    'hapusInformasi',
+    'meterData',
+    'meterSimpanBacaan',
+    'meterBuatTagihan',
+    'meterBayar',
+    'meterSimpanMeterAwal'
   ];
 
   if (!allowed.includes(action)) {
@@ -37,7 +41,7 @@ export default async function handler(req, res) {
       });
 
     } else if (req.method === 'POST') {
-      if (!['tambahInformasi', 'hapusInformasi'].includes(action)) {
+      if (!['tambahInformasi', 'hapusInformasi', 'meterData', 'meterSimpanBacaan', 'meterBuatTagihan', 'meterBayar', 'meterSimpanMeterAwal'].includes(action)) {
         return res.status(405).json({ error: 'Metode tidak diizinkan.' });
       }
 
@@ -80,3 +84,5 @@ export default async function handler(req, res) {
     });
   }
 }
+
+
