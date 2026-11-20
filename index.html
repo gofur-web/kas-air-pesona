@@ -115,6 +115,7 @@ footer{background:#104b8c;color:#fff;padding:14px 20px;font-size:12px;text-align
     <div class="nav active" onclick="switchPage('beranda', this)">⌂ &nbsp; Beranda</div>
     <div class="nav" onclick="switchPage('kas', this)">▤ &nbsp; Kas AIR</div>
     <div class="nav" onclick="switchPage('iuran', this)">♧ &nbsp; Iuran Warga</div>
+    <div class="nav" onclick="switchPage('meter', this)">▣ &nbsp; Tagihan Air Meteran</div>
     <div class="nav" onclick="switchPage('laporan', this)">▥ &nbsp; Laporan</div>
     <div class="nav" onclick="switchPage('warga', this)">♙ &nbsp; Data Warga</div>
     <div class="nav" onclick="switchPage('informasi', this)">📢 &nbsp; Informasi / Catatan</div>
@@ -143,6 +144,7 @@ function renderView(page, d) {
   if (page === 'beranda') drawDashboard(d);
   else if (page === 'kas') drawKas(d);
   else if (page === 'iuran') drawIuran(d);
+  else if (page === 'meter') drawMeter();
   else if (page === 'laporan') drawLaporan(d);
   else if (page === 'warga') drawWarga(d);
   else if (page === 'informasi') muatInformasi();
@@ -444,6 +446,43 @@ function hapusInformasi(id) {
     })
     .catch(err => alert('Gagal menghapus informasi: ' + (err?.message || err)));
 }
+
+
+
+// ---------------- TAGIHAN AIR METERAN ----------------
+let meterAdminPin = '';
+let meterDataCache = null;
+const rupiahMeter = n => 'Rp ' + Number(n||0).toLocaleString('id-ID');
+function meterPost(action, payload={}) {
+  return fetch('/api/proxy?action='+encodeURIComponent(action), {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...payload,pin:meterAdminPin})})
+    .then(async r=>{const d=await r.json();if(!r.ok||d.success===false)throw new Error(d.error||'Permintaan gagal.');return d;});
+}
+function drawMeter() {
+  app.innerHTML = `<div class="heading"><h2>▣ Tagihan Air Meteran</h2><span class="muted">Tarif Rp2.500/m³ · Abodemen Rp10.000/bulan</span></div>
+    <section class="panel"><div class="info">Modul pengelolaan meter air khusus pengurus. Masukkan PIN admin yang sama dengan PIN Informasi/Catatan untuk membuka data dan mencatat meter.</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><input id="meterPin" type="password" placeholder="PIN admin" style="flex:1;min-width:180px;padding:11px;border:1px solid #cbd8e8;border-radius:8px"><button type="button" onclick="meterLogin()" style="border:0;border-radius:8px;background:#2879e8;color:white;padding:11px 16px;font-weight:bold">Buka Modul</button></div><div id="meterMsg" class="muted" style="margin-top:10px"></div></section><div id="meterContent"></div>`;
+  if(meterAdminPin) meterLoad();
+}
+function meterLogin(){meterAdminPin=document.getElementById('meterPin').value.trim();if(!meterAdminPin){alert('Masukkan PIN admin.');return;}meterLoad();}
+function meterLoad(){
+  const box=document.getElementById('meterContent'); if(box)box.innerHTML='<section class="panel">Memuat data meter...</section>';
+  meterPost('meterData').then(d=>{meterDataCache=d;meterRender(d);}).catch(e=>{meterAdminPin='';if(box)box.innerHTML='<section class="panel error">'+esc(e.message)+'</section>';});
+}
+function meterRender(d){
+  const box=document.getElementById('meterContent');if(!box)return;
+  const customers=d.customers||[], bills=[...(d.bills||[])].reverse();
+  const opts=customers.filter(c=>c.aktif==='Aktif').map(c=>`<option value="${esc(c.id)}">${esc(c.blok)} - ${esc(c.nama)}</option>`).join('');
+  const rows=bills.slice(0,100).map(b=>`<tr><td>${esc(b.bulan)}</td><td>${esc(b.blok)} - ${esc(b.nama)}</td><td>${b.meterAwal}</td><td>${b.meterAkhir}</td><td>${b.pemakaian} m³</td><td>${rupiahMeter(b.total)}</td><td><span class="pill ${b.status==='Lunas'?'in':'out'}">${esc(b.status)}</span></td><td>${b.status==='Lunas'?'-':`<button onclick="meterBayar('${esc(b.id)}')">Konfirmasi Lunas</button>`}</td></tr>`).join('');
+  box.innerHTML=`<div class="cards" style="margin-top:12px"><div class="card blue"><div class="label">Tarif Air</div><div class="value">${rupiahMeter(d.tarif)}/m³</div></div><div class="card green"><div class="label">Abodemen</div><div class="value">${rupiahMeter(d.abodemen)}</div></div><div class="card purple"><div class="label">Pelanggan</div><div class="value">${customers.length}</div></div><div class="card blue"><div class="label">Tagihan Terbit</div><div class="value">${(d.bills||[]).length}</div></div></div>
+  <div class="two" style="margin-top:12px"><section class="panel"><h3>Input Angka Meter</h3><form id="formMeterBaca"><label>Bulan tagihan</label><input name="bulan" type="month" required value="${new Date().toISOString().slice(0,7)}" style="display:block;width:100%;padding:10px;margin:6px 0 12px;border:1px solid #cbd8e8;border-radius:8px"><label>Rumah / pelanggan</label><select name="customerId" required style="display:block;width:100%;padding:10px;margin:6px 0 12px;border:1px solid #cbd8e8;border-radius:8px">${opts}</select><label>Angka meter saat ini (m³)</label><input name="meter" type="number" min="0" step="0.01" required style="display:block;width:100%;padding:10px;margin:6px 0 12px;border:1px solid #cbd8e8;border-radius:8px"><button type="submit" style="border:0;border-radius:8px;background:#2879e8;color:white;padding:11px 16px">Simpan Bacaan Meter</button></form></section>
+  <section class="panel"><h3>Terbitkan Tagihan Bulanan</h3><p class="muted">Tagihan dibuat dari bacaan bulan terpilih dan bacaan terakhir sebelumnya. Rumah tanpa bacaan bulan ini akan dilewati.</p><form id="formMeterTagih"><label>Bulan tagihan</label><input name="bulan" type="month" required value="${new Date().toISOString().slice(0,7)}" style="display:block;width:100%;padding:10px;margin:6px 0 12px;border:1px solid #cbd8e8;border-radius:8px"><button type="submit" style="border:0;border-radius:8px;background:#147344;color:white;padding:11px 16px">Buat Tagihan</button></form><div class="muted" style="margin-top:12px">Rumus: (meter akhir − meter awal) × Rp2.500 + Rp10.000.</div></section></div>
+  <section class="panel" style="margin-top:12px"><div class="heading"><h3>Daftar Tagihan Meter Air</h3><button onclick="meterLoad()">↻ Perbarui</button></div><div class="tablewrap"><table><thead><tr><th>Bulan</th><th>Rumah</th><th>Meter Awal</th><th>Meter Akhir</th><th>Pemakaian</th><th>Total</th><th>Status</th><th>Aksi</th></tr></thead><tbody>${rows||'<tr><td colspan="8">Belum ada tagihan.</td></tr>'}</tbody></table></div></section>
+  <section class="panel" style="margin-top:12px"><h3>Pengaturan Meter Awal</h3><p class="muted">Isi angka meter yang tercatat sebelum periode tagihan pertama agar pemakaian pertama dihitung dengan benar.</p><form id="formMeterAwal" style="display:flex;gap:8px;flex-wrap:wrap"><select name="customerId" required style="flex:2;min-width:180px;padding:10px;border:1px solid #cbd8e8;border-radius:8px">${opts}</select><input name="meterAwal" type="number" min="0" step="0.01" placeholder="Meter awal" required style="flex:1;min-width:120px;padding:10px;border:1px solid #cbd8e8;border-radius:8px"><button type="submit">Simpan Meter Awal</button></form></section>`;
+  document.getElementById('formMeterBaca').onsubmit=e=>{e.preventDefault();const f=new FormData(e.currentTarget);meterPost('meterSimpanBacaan',{data:{bulan:f.get('bulan'),customerId:f.get('customerId'),meter:f.get('meter')}}).then(()=>{alert('Bacaan meter tersimpan.');meterLoad();}).catch(x=>alert(x.message));};
+  document.getElementById('formMeterTagih').onsubmit=e=>{e.preventDefault();const bulan=new FormData(e.currentTarget).get('bulan');if(!confirm('Terbitkan tagihan untuk bulan '+bulan+'? Tagihan yang sudah ada tidak akan dibuat ulang.'))return;meterPost('meterBuatTagihan',{bulan}).then(x=>{alert('Tagihan dibuat: '+x.created.length+' rumah. Rumah dilewati: '+x.skipped.length+'.');meterLoad();}).catch(x=>alert(x.message));};
+  document.getElementById('formMeterAwal').onsubmit=e=>{e.preventDefault();const f=new FormData(e.currentTarget);meterPost('meterSimpanMeterAwal',{customerId:f.get('customerId'),meterAwal:f.get('meterAwal')}).then(()=>{alert('Meter awal tersimpan.');meterLoad();}).catch(x=>alert(x.message));};
+}
+function meterBayar(id){const metode=prompt('Metode pembayaran: ketik Tunai atau Transfer','Tunai');if(!metode)return;const tanggal=prompt('Tanggal pembayaran (YYYY-MM-DD), kosongkan untuk hari ini:',new Date().toISOString().slice(0,10));if(tanggal===null)return;meterPost('meterBayar',{id,metode:metode.trim(),tanggal}).then(x=>{alert('Pembayaran '+rupiahMeter(x.nominal)+' berhasil dicatat ke Kas AIR.');meterLoad();}).catch(e=>alert(e.message));}
 
 function initData(d) {
   if (d.error) {
