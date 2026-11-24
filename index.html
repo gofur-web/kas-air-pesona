@@ -513,6 +513,142 @@ if ("serviceWorker" in navigator) {
       });
   });
 }
+  
+function meterCetak(id, mode){
+  const bills = meterDataCache?.bills || [];
+  const b = bills.find(x => String(x.id) === String(id));
+
+  if(!b){
+    alert('Data tagihan tidak ditemukan. Silakan klik Perbarui.');
+    return;
+  }
+
+  const tarif = Number(b.tarif || 2500);
+  const abodemen = Number(b.abodemen ?? 10000);
+  const pemakaian = Number(b.pemakaian || 0);
+  const biayaPemakaian = pemakaian * tarif;
+  const total = Number(b.total || (biayaPemakaian + abodemen));
+
+  const win = window.open('', '_blank');
+  if(!win){
+    alert('Jendela cetak diblokir. Izinkan pop-up pada browser, lalu coba lagi.');
+    return;
+  }
+
+  win.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <title>Tagihan Air - ${esc(b.blok)} - ${esc(b.nama)}</title>
+      <style>
+        @page { size: A4; margin: 18mm; }
+        body {
+          font-family: Arial, sans-serif;
+          color: #222;
+          font-size: 14px;
+        }
+        .invoice {
+          max-width: 700px;
+          margin: 0 auto;
+        }
+        .header {
+          text-align: center;
+          border-bottom: 3px solid #16804a;
+          padding-bottom: 15px;
+          margin-bottom: 25px;
+        }
+        .header h1 {
+          color: #16804a;
+          margin: 0 0 6px;
+          font-size: 25px;
+        }
+        .header p { margin: 4px 0; }
+        h2 {
+          text-align: center;
+          margin: 25px 0;
+        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 15px;
+        }
+        td, th {
+          border: 1px solid #ccc;
+          padding: 11px;
+        }
+        th {
+          background: #edf5ef;
+          text-align: left;
+        }
+        .total {
+          font-size: 18px;
+          font-weight: bold;
+          color: #16804a;
+        }
+        .footer {
+          margin-top: 40px;
+          text-align: center;
+          font-size: 12px;
+          color: #666;
+        }
+        .signature {
+          margin-top: 45px;
+          text-align: right;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="invoice">
+        <div class="header">
+          <h1>KAS AIR PESONA</h1>
+          <p>Perumahan Taman Pesona Rajeg Mulya</p>
+          <p>Desa Rajeg Mulya, Kecamatan Rajeg, Kabupaten Tangerang</p>
+        </div>
+
+        <h2>TAGIHAN PEMAKAIAN AIR</h2>
+
+        <table>
+          <tr><th width="35%">Nomor Tagihan</th><td>${esc(b.id)}</td></tr>
+          <tr><th>Periode</th><td>${esc(b.bulan)}</td></tr>
+          <tr><th>Blok / Nomor Rumah</th><td>${esc(b.blok)}</td></tr>
+          <tr><th>Nama Warga</th><td>${esc(b.nama)}</td></tr>
+        </table>
+
+        <br>
+
+        <table>
+          <tr><th>Rincian</th><th>Jumlah</th></tr>
+          <tr><td>Meter Awal</td><td>${esc(b.meterAwal)}</td></tr>
+          <tr><td>Meter Akhir</td><td>${esc(b.meterAkhir)}</td></tr>
+          <tr><td>Pemakaian Air</td><td>${pemakaian} m³</td></tr>
+          <tr><td>Biaya Pemakaian (${rupiahMeter(tarif)}/m³)</td><td>${rupiahMeter(biayaPemakaian)}</td></tr>
+          <tr><td>Abodemen / Perawatan</td><td>${rupiahMeter(abodemen)}</td></tr>
+          <tr><td class="total">TOTAL TAGIHAN</td><td class="total">${rupiahMeter(total)}</td></tr>
+        </table>
+
+        <p><strong>Status Pembayaran:</strong> ${esc(b.status)}</p>
+
+        <div class="signature">
+          Pengurus Air Pesona
+        </div>
+
+        <div class="footer">
+          Terima kasih atas partisipasi dan pembayaran Anda.<br>
+          KAS AIR PESONA
+        </div>
+      </div>
+    </body>
+    </html>
+  `);
+
+  win.document.close();
+  setTimeout(() => {
+    win.focus();
+    win.print();
+  }, 500);
+}
+
 </script>
 
 </body>
