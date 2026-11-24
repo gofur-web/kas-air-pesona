@@ -119,6 +119,8 @@ footer{background:#104b8c;color:#fff;padding:14px 20px;font-size:12px;text-align
     <div class="nav" onclick="switchPage('laporan', this)">▥ &nbsp; Laporan</div>
     <div class="nav" onclick="switchPage('warga', this)">♙ &nbsp; Data Warga</div>
     <div class="nav" onclick="switchPage('informasi', this)">📢 &nbsp; Informasi / Catatan</div>
+    <div class="nav" onclick="switchPage('informasi', this)">📢 &nbsp; Informasi / Catatan</div>
+    <div class="nav" onclick="switchPage('tentang', this)">ⓘ &nbsp; Tentang Aplikasi</div>
   </aside>
   <main id="app">
     <div class="muted">Memuat data dari Google Sheets KAS AIR...</div>
@@ -148,6 +150,49 @@ function renderView(page, d) {
   else if (page === 'laporan') drawLaporan(d);
   else if (page === 'warga') drawWarga(d);
   else if (page === 'informasi') muatInformasi();
+  else if (page === 'tentang') drawTentang();
+}
+
+function drawTentang() {
+  app.innerHTML = `
+    <div class="heading">
+      <h2>ⓘ Tentang Aplikasi</h2>
+    </div>
+
+    <section class="panel" style="max-width:650px;margin:20px auto;text-align:center;padding:30px 20px;">
+      <div style="font-size:55px;margin-bottom:12px;">💧</div>
+
+      <h2 style="color:#2879e8;margin:0 0 8px;">
+        KAS AIR PESONA
+      </h2>
+
+      <p class="muted">
+        Aplikasi Pengelolaan Air Swadaya Pesona
+      </p>
+
+      <div style="display:inline-block;background:#e8f5ed;color:#147344;padding:7px 16px;border-radius:20px;font-weight:bold;margin:12px 0;">
+        Versi 1.0.0
+      </div>
+
+      <hr style="border:0;border-top:1px solid #dce5ee;margin:20px 0;">
+
+      <div style="text-align:left;line-height:2;">
+        <p><strong>Nama Aplikasi:</strong> Kas AIR Pesona</p>
+        <p><strong>Pengembang:</strong> Abdul Gofur</p>
+        <p><strong>Versi:</strong> 1.0.0</p>
+        <p><strong>Tahun Pembuatan:</strong> 2026</p>
+      </div>
+
+      <hr style="border:0;border-top:1px solid #dce5ee;margin:20px 0;">
+
+      <p style="font-size:13px;color:#64748b;">
+        © 2026 Kas AIR Pesona. Hak Cipta Dilindungi.
+      </p>
+      <p style="font-size:13px;color:#64748b;">
+        Dikembangkan oleh <strong>Abdul Gofur</strong>
+      </p>
+    </section>
+  `;
 }
 
 function drawDashboard(d) {
