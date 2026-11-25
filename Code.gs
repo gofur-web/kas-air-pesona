@@ -7,22 +7,35 @@ function doGet(e) {
     .setMimeType(ContentService.MimeType.TEXT);
 }
 
+
 function doPost(e) {
   try {
     var body = JSON.parse((e && e.postData && e.postData.contents) || '{}');
     var result;
+
     if (body.action === 'tambahInformasi') {
       result = tambahInformasiBersama(body.data, body.pin);
+
     } else if (body.action === 'hapusInformasi') {
       result = hapusInformasiBersama(body.id, body.pin);
+
+    } else if (body.action === 'ubahStatusNotifikasi') {
+      result = ubahStatusNotifikasi(body.id);
+
     } else {
       throw new Error('Aksi tidak dikenal.');
     }
+
     return jsonOutput_(result);
+
   } catch (err) {
-    return jsonOutput_({ success: false, error: String(err && err.message ? err.message : err) });
+    return jsonOutput_({
+      success: false,
+      error: String(err && err.message ? err.message : err)
+    });
   }
 }
+
 
 function jsonOutput_(data) {
   return ContentService.createTextOutput(JSON.stringify(data))
