@@ -56,6 +56,7 @@ module.exports = async function handler(req, res) {
         'meterBuatTagihan',
         'meterBayar',
         'meterSimpanMeterAwal'
+        'ubahStatusNotifikasi'
       ].includes(action)) {
         return res.status(405).json({
           error: 'Metode tidak diizinkan.'
