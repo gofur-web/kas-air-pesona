@@ -28,9 +28,9 @@ export default async function handler(req, res) {
   try {
     let upstream;
 
-    if (req.method === 'GET') {
-      if (!['dashboard', 'informasi'].includes(action)) {
-        return res.status(405).json({ error: 'Metode tidak diizinkan.' });
+    if (!['dashboard', 'informasi', 'notifikasi'].includes(action)) {
+  return res.status(405).json({ error: 'Metode tidak diizinkan.' });
+
       }
 
       const url = new URL(gasUrl);
