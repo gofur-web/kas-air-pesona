@@ -196,6 +196,7 @@ function drawTentang() {
   `;
 }
   
+
 function drawNotifikasi() {
   app.innerHTML = `
     <div class="heading">
@@ -203,7 +204,14 @@ function drawNotifikasi() {
     </div>
 
     <section class="panel" style="max-width:650px;margin:20px auto;padding:22px;">
-      <h3>🔔 Kirim Pemberitahuan Warga</h3>
+      <h3>🔔 Riwayat Perubahan Otomatis</h3>
+      <div id="riwayatNotif" class="muted">
+        Memuat riwayat perubahan...
+      </div>
+    </section>
+
+    <section class="panel" style="max-width:650px;margin:20px auto;padding:22px;">
+      <h3>📢 Kirim Pemberitahuan Warga</h3>
       <p class="muted">
         Siapkan informasi perubahan kas dan pembaruan rekap iuran warga.
       </p>
@@ -231,7 +239,35 @@ function drawNotifikasi() {
       </p>
     </section>
   `;
+
+  fetch('/api/proxy?action=notifikasi')
+    .then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(d => {
+      const box = document.getElementById('riwayatNotif');
+      if (!box) return;
+
+      if (!d.success || !d.data || d.data.length === 0) {
+        box.textContent = 'Belum ada riwayat perubahan.';
+        return;
+      }
+
+      box.innerHTML = d.data.map(item => `
+        <div style="padding:12px 0;border-bottom:1px solid #e2e8f0;">
+          <strong>${esc(item.jenis === 'kas' ? '💰 Perubahan Uang Kas' : '🧾 Pembaruan Rekap Iuran')}</strong>
+          <div>${esc(item.keterangan)}</div>
+          <small class="muted">${esc(item.waktu)} • ${esc(item.status)}</small>
+        </div>
+      `).join('');
+    })
+    .catch(err => {
+      const box = document.getElementById('riwayatNotif');
+      if (box) box.textContent = 'Gagal memuat riwayat: ' + err.message;
+    });
 }
+
 
 function buatPesanNotif() {
   const jenis = document.getElementById('jenisNotif').value;
