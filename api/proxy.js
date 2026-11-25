@@ -55,7 +55,7 @@ module.exports = async function handler(req, res) {
         'meterSimpanBacaan',
         'meterBuatTagihan',
         'meterBayar',
-        'meterSimpanMeterAwal'
+        'meterSimpanMeterAwal',
         'ubahStatusNotifikasi'
       ].includes(action)) {
         return res.status(405).json({
