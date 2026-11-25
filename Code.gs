@@ -305,8 +305,9 @@ function getNotifikasi() {
     2, 1, sh.getLastRow() - 1, 4
   ).getValues();
 
-  var data = rows.reverse().map(function(row) {
+  var data = rows.reverse().map(function(row, index) {
     return {
+      id: sh.getLastRow() - index,
       waktu: row[0] instanceof Date
         ? Utilities.formatDate(
             row[0],
