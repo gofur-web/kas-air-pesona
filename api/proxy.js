@@ -11,6 +11,7 @@ export default async function handler(req, res) {
   const allowed = [
     'dashboard',
     'informasi',
+    'notifikasi',
     'tambahInformasi',
     'hapusInformasi',
     'meterData',
