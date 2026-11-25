@@ -256,33 +256,71 @@ function drawNotifikasi() {
 
       
 
-box.innerHTML = d.data.map(item => `
-  <div style="padding:12px 0;border-bottom:1px solid #e2e8f0;">
-    <strong>${esc(item.jenis === 'kas' ? '💰 Perubahan Uang Kas' : '🧾 Pembaruan Rekap Iuran')}</strong>
 
-    <div>${esc(item.keterangan)}</div>
+const belumDikirim = d.data.filter(
+  item => item.status !== 'Sudah dikirim'
+);
 
-    <small class="muted">
-      ${esc(item.waktu)} • ${esc(item.status)}
-    </small>
+const sudahDikirim = d.data.filter(
+  item => item.status === 'Sudah dikirim'
+);
 
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
-      <button
-        onclick="kirimRiwayatNotif('${encodeURIComponent(item.jenis)}','${encodeURIComponent(item.waktu)}')"
-        style="padding:8px 14px;background:#16a34a;color:white;border:0;border-radius:7px;cursor:pointer;">
-        📲 Kirim WhatsApp
-      </button>
+function buatDaftarNotif(items, selesai) {
+  if (items.length === 0) {
+    return `<p class="muted">Tidak ada notifikasi.</p>`;
+  }
 
-      ${item.status !== 'Sudah dikirim' ? `
-        <button
-          onclick="tandaiNotifikasiDikirim(${Number(item.id)})"
-          style="padding:8px 14px;background:#2563eb;color:white;border:0;border-radius:7px;cursor:pointer;">
-          ✓ Tandai Sudah Dikirim
-        </button>
+  return items.map(item => `
+    <div style="padding:12px 0;border-bottom:1px solid #e2e8f0;">
+      <strong>
+        ${esc(item.jenis === 'kas'
+          ? '💰 Perubahan Uang Kas'
+          : item.jenis === 'iuran'
+            ? '🧾 Pembaruan Rekap Iuran'
+            : '📢 Pemberitahuan Umum')}
+      </strong>
+
+      <div>${esc(item.keterangan)}</div>
+
+      <small class="muted">
+        ${esc(item.waktu)} • ${selesai ? '✓ Selesai' : 'Belum dikirim'}
+      </small>
+
+      ${!selesai ? `
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
+          <button
+            onclick="kirimRiwayatNotif('${encodeURIComponent(item.jenis)}','${encodeURIComponent(item.waktu)}')"
+            style="padding:8px 14px;background:#16a34a;color:white;border:0;border-radius:7px;cursor:pointer;">
+            📲 Kirim WhatsApp
+          </button>
+
+          <button
+            onclick="tandaiNotifikasiDikirim(${Number(item.id)})"
+            style="padding:8px 14px;background:#2563eb;color:white;border:0;border-radius:7px;cursor:pointer;">
+            ✓ Tandai Sudah Dikirim
+          </button>
+        </div>
       ` : ''}
     </div>
-  </div>
-`).join('');
+  `).join('');
+}
+
+box.innerHTML = `
+  <section>
+    <h4 style="color:#d97706;">
+      🔔 Belum Dikirim (${belumDikirim.length})
+    </h4>
+    ${buatDaftarNotif(belumDikirim, false)}
+  </section>
+
+  <section style="margin-top:25px;">
+    <h4 style="color:#16a34a;">
+      ✓ Selesai (${sudahDikirim.length})
+    </h4>
+    ${buatDaftarNotif(sudahDikirim, true)}
+  </section>
+`;
+
 
 
     })
