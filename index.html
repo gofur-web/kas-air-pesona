@@ -195,6 +195,71 @@ function drawTentang() {
     </section>
   `;
 }
+  
+function drawNotifikasi() {
+  app.innerHTML = `
+    <div class="heading">
+      <h2>📲 Notifikasi WhatsApp</h2>
+    </div>
+
+    <section class="panel" style="max-width:650px;margin:20px auto;padding:22px;">
+      <h3>🔔 Kirim Pemberitahuan Warga</h3>
+      <p class="muted">
+        Siapkan informasi perubahan kas dan pembaruan rekap iuran warga.
+      </p>
+
+      <label>Jenis Pemberitahuan</label>
+      <select id="jenisNotif" class="input">
+        <option value="kas">Perubahan Uang Kas</option>
+        <option value="iuran">Pembaruan Rekap Iuran Warga</option>
+        <option value="umum">Pemberitahuan Umum</option>
+      </select>
+
+      <label style="display:block;margin-top:15px;">Isi Pesan</label>
+      <textarea id="isiNotif" rows="7"
+        style="width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:8px;"
+        placeholder="Tuliskan informasi yang akan disampaikan kepada warga..."></textarea>
+
+      <button onclick="buatPesanNotif()"
+        style="width:100%;margin-top:15px;padding:12px;background:#16a34a;color:white;border:0;border-radius:8px;font-weight:bold;">
+        📲 Buka WhatsApp
+      </button>
+
+      <p class="muted" style="font-size:12px;margin-top:12px;">
+        WhatsApp akan terbuka dengan pesan yang sudah disiapkan.
+        Pilih grup warga dan tekan Kirim.
+      </p>
+    </section>
+  `;
+}
+
+function buatPesanNotif() {
+  const jenis = document.getElementById('jenisNotif').value;
+  const isi = document.getElementById('isiNotif').value.trim();
+
+  if (!isi) {
+    alert('Silakan isi pesan pemberitahuan terlebih dahulu.');
+    return;
+  }
+
+  const judul = {
+    kas: 'PEMBERITAHUAN PERUBAHAN UANG KAS',
+    iuran: 'PEMBARUAN REKAP IURAN WARGA',
+    umum: 'PEMBERITAHUAN WARGA'
+  };
+
+  const pesan =
+    '📢 KAS AIR PESONA\n\n' +
+    judul[jenis] + '\n\n' +
+    isi + '\n\n' +
+    'Terima kasih.\nPengurus Air Swadaya Pesona';
+
+  window.open(
+    'https://wa.me/?text=' + encodeURIComponent(pesan),
+    '_blank'
+  );
+}
+
 
 function drawDashboard(d) {
   let ms = (d.monthly || []).slice(-10), mx = Math.max(1, ...ms.flatMap(x => [x.income, x.expense]));
