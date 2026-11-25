@@ -2,6 +2,7 @@ function doGet(e) {
   var action = e && e.parameter ? e.parameter.action : '';
   if (action === 'dashboard') return jsonOutput_(getDashboardData());
   if (action === 'informasi') return jsonOutput_(getInformasiBersama());
+  if (action === 'notifikasi') return jsonOutput_(getNotifikasi());
   return ContentService.createTextOutput('Kas Air Pesona API aktif. Gunakan action=dashboard atau action=informasi.')
     .setMimeType(ContentService.MimeType.TEXT);
 }
@@ -273,4 +274,63 @@ function cekInfoAdminPin_(pin) {
 function safeInfoCell_(value) {
   const text = String(value == null ? '' : value);
   return /^[=+\-@]/.test(text) ? "'" + text : text;
+}
+
+
+function getNotifikasi() {
+  var sh = SpreadsheetApp.getActiveSpreadsheet()
+    .getSheetByName('Notifikasi_Log');
+
+  if (!sh || sh.getLastRow() < 2) {
+    return {
+      success: true,
+      data: []
+    };
+  }
+
+  var rows = sh.getRange(
+    2, 1, sh.getLastRow() - 1, 4
+  ).getValues();
+
+  var data = rows.reverse().map(function(row) {
+    return {
+      waktu: row[0] instanceof Date
+        ? Utilities.formatDate(
+            row[0],
+            Session.getScriptTimeZone(),
+            'dd-MM-yyyy HH:mm'
+          )
+        : String(row[0]),
+      jenis: String(row[1]),
+      keterangan: String(row[2]),
+      status: String(row[3])
+    };
+  });
+
+  return {
+    success: true,
+    data: data
+  };
+}
+
+function ubahStatusNotifikasi(id) {
+  var sh = SpreadsheetApp.getActiveSpreadsheet()
+    .getSheetByName('Notifikasi_Log');
+
+  if (!sh) {
+    throw new Error('Sheet Notifikasi_Log tidak ditemukan.');
+  }
+
+  var baris = Number(id);
+
+  if (!Number.isInteger(baris) || baris < 2 || baris > sh.getLastRow()) {
+    throw new Error('Data notifikasi tidak ditemukan.');
+  }
+
+  sh.getRange(baris, 4).setValue('Sudah dikirim');
+
+  return {
+    success: true,
+    message: 'Status notifikasi berhasil diperbarui.'
+  };
 }
