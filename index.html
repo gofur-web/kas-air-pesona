@@ -315,6 +315,37 @@ function kirimRiwayatNotif(jenisEncoded, waktuEncoded) {
   );
 }
 
+function tandaiNotifikasiDikirim(id) {
+  if (!confirm('Tandai notifikasi ini sebagai sudah dikirim?')) {
+    return;
+  }
+
+  fetch('/api/proxy?action=ubahStatusNotifikasi', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      id: id
+    })
+  })
+    .then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(d => {
+      if (!d.success) {
+        throw new Error(d.error || 'Gagal memperbarui status.');
+      }
+
+      alert('Status notifikasi berhasil diperbarui.');
+      drawNotifikasi();
+    })
+    .catch(err => {
+      alert('Gagal memperbarui status: ' + err.message);
+    });
+}
+
 function buatPesanNotif() {
   const jenis = document.getElementById('jenisNotif').value;
   const isi = document.getElementById('isiNotif').value.trim();
