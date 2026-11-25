@@ -254,13 +254,21 @@ function drawNotifikasi() {
         return;
       }
 
-      box.innerHTML = d.data.map(item => `
-        <div style="padding:12px 0;border-bottom:1px solid #e2e8f0;">
-          <strong>${esc(item.jenis === 'kas' ? '💰 Perubahan Uang Kas' : '🧾 Pembaruan Rekap Iuran')}</strong>
-          <div>${esc(item.keterangan)}</div>
-          <small class="muted">${esc(item.waktu)} • ${esc(item.status)}</small>
-        </div>
-      `).join('');
+      
+box.innerHTML = d.data.map(item => `
+  <div style="padding:12px 0;border-bottom:1px solid #e2e8f0;">
+    <strong>${esc(item.jenis === 'kas' ? '💰 Perubahan Uang Kas' : '🧾 Pembaruan Rekap Iuran')}</strong>
+    <div>${esc(item.keterangan)}</div>
+    <small class="muted">${esc(item.waktu)} • ${esc(item.status)}</small>
+
+    <button
+      onclick="kirimRiwayatNotif('${encodeURIComponent(item.jenis)}','${encodeURIComponent(item.waktu)}')"
+      style="margin-top:10px;padding:8px 14px;background:#16a34a;color:white;border:0;border-radius:7px;cursor:pointer;">
+      📲 Kirim WhatsApp
+    </button>
+  </div>
+`).join('');
+
     })
     .catch(err => {
       const box = document.getElementById('riwayatNotif');
@@ -268,6 +276,28 @@ function drawNotifikasi() {
     });
 }
 
+
+function kirimRiwayatNotif(jenisEncoded, waktuEncoded) {
+  const jenis = decodeURIComponent(jenisEncoded);
+  const waktu = decodeURIComponent(waktuEncoded);
+
+  const judul = jenis === 'kas'
+    ? 'PEMBERITAHUAN PERUBAHAN UANG KAS'
+    : 'PEMBARUAN REKAP IURAN WARGA';
+
+  const pesan =
+    '📢 KAS AIR PESONA\n\n' +
+    judul + '\n\n' +
+    'Terdapat perubahan data pada tanggal: ' + waktu + '\n\n' +
+    'Silakan buka aplikasi Kas AIR Pesona:\n' +
+    'https://kas-air-pesona.vercel.app/\n\n' +
+    'Terima kasih.\nPengurus Air Swadaya Pesona';
+
+  window.open(
+    'https://wa.me/?text=' + encodeURIComponent(pesan),
+    '_blank'
+  );
+}
 
 function buatPesanNotif() {
   const jenis = document.getElementById('jenisNotif').value;
