@@ -248,11 +248,15 @@ function buatPesanNotif() {
     umum: 'PEMBERITAHUAN WARGA'
   };
 
-  const pesan =
-    '📢 KAS AIR PESONA\n\n' +
-    judul[jenis] + '\n\n' +
-    isi + '\n\n' +
-    'Terima kasih.\nPengurus Air Swadaya Pesona';
+  
+const pesan =
+  '📢 KAS AIR PESONA\n\n' +
+  judul[jenis] + '\n\n' +
+  isi + '\n\n' +
+  'Silakan buka aplikasi Kas AIR Pesona melalui link berikut:\n' +
+  'https://kas-air-pesona.vercel.app/\n\n' +
+  'Terima kasih.\nPengurus Air Swadaya Pesona';
+
 
   window.open(
     'https://wa.me/?text=' + encodeURIComponent(pesan),
