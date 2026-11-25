@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   const gasUrl = process.env.GAS_WEB_APP_URL;
 
   if (!gasUrl) {
