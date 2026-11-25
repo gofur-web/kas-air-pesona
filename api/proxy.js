@@ -1,3 +1,4 @@
+
 module.exports = async function handler(req, res) {
   const gasUrl = process.env.GAS_WEB_APP_URL;
 
@@ -8,6 +9,7 @@ module.exports = async function handler(req, res) {
   }
 
   const action = String(req.query.action || '');
+
   const allowed = [
     'dashboard',
     'informasi',
@@ -22,15 +24,19 @@ module.exports = async function handler(req, res) {
   ];
 
   if (!allowed.includes(action)) {
-    return res.status(400).json({ error: 'Aksi API tidak valid.' });
+    return res.status(400).json({
+      error: 'Aksi API tidak valid.'
+    });
   }
 
   try {
     let upstream;
 
-    if (!['dashboard', 'informasi', 'notifikasi'].includes(action)) {
-  return res.status(405).json({ error: 'Metode tidak diizinkan.' });
-
+    if (req.method === 'GET') {
+      if (!['dashboard', 'informasi', 'notifikasi'].includes(action)) {
+        return res.status(405).json({
+          error: 'Metode tidak diizinkan.'
+        });
       }
 
       const url = new URL(gasUrl);
@@ -42,8 +48,18 @@ module.exports = async function handler(req, res) {
       });
 
     } else if (req.method === 'POST') {
-      if (!['tambahInformasi', 'hapusInformasi', 'meterData', 'meterSimpanBacaan', 'meterBuatTagihan', 'meterBayar', 'meterSimpanMeterAwal'].includes(action)) {
-        return res.status(405).json({ error: 'Metode tidak diizinkan.' });
+      if (![
+        'tambahInformasi',
+        'hapusInformasi',
+        'meterData',
+        'meterSimpanBacaan',
+        'meterBuatTagihan',
+        'meterBayar',
+        'meterSimpanMeterAwal'
+      ].includes(action)) {
+        return res.status(405).json({
+          error: 'Metode tidak diizinkan.'
+        });
       }
 
       const payload = typeof req.body === 'string'
@@ -63,12 +79,15 @@ module.exports = async function handler(req, res) {
 
     } else {
       res.setHeader('Allow', 'GET, POST');
-      return res.status(405).json({ error: 'Metode tidak diizinkan.' });
+      return res.status(405).json({
+        error: 'Metode tidak diizinkan.'
+      });
     }
 
     const responseText = await upstream.text();
 
     let data;
+
     try {
       data = JSON.parse(responseText);
     } catch {
@@ -84,6 +103,4 @@ module.exports = async function handler(req, res) {
       error: err.message || 'Gagal menghubungi Google Apps Script.'
     });
   }
-}
-
-
+};
