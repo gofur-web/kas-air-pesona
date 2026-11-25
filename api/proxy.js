@@ -20,7 +20,8 @@ module.exports = async function handler(req, res) {
     'meterSimpanBacaan',
     'meterBuatTagihan',
     'meterBayar',
-    'meterSimpanMeterAwal'
+    'meterSimpanMeterAwal',
+    'ubahStatusNotifikasi'
   ];
 
   if (!allowed.includes(action)) {
